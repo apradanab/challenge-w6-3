@@ -1,83 +1,72 @@
+/* eslint-disable @typescript-eslint/member-ordering */
 import createDebug from 'debug';
 import { type Pet } from '../entities/pet';
 const debug = createDebug('W6E:repository:user');
 import fs from 'fs';
+import { readFile, writeFile} from "fs/promises";
 
 export class PetRepository {
   pets: Pet[] = [];
   constructor() {
-    this.loadFromFile();
+    debug('');
   }
 
-  private loadFromFile() {
-    try {
-      const data = fs.readFileSync('db.json', { encoding: 'utf-8' });
-
-      const jsonData = JSON.parse(data) as Pet[];
-      this.pets = jsonData;
-    } catch (error) {
-      debug('Error reading data from file:', error);
-      this.pets = [];
-    }
+  private async load(): Promise<Pet[]> {
+      const data = await readFile('db.json', 'utf-8');
+      return JSON.parse(data) as Pet[];
   }
 
-  // eslint-disable-next-line @typescript-eslint/member-ordering
-  saveToFile() {
-    try {
-      fs.writeFileSync('db.json', JSON.stringify(this.pets, null, 2), {
-        encoding: 'utf-8',
-      });
-    } catch (error) {
-      debug('Error saving data to file:', error);
-    }
+  
+  private async save() {
+    await writeFile('db.json', JSON.stringify(this.pets, null, 2));
   }
 
-  // eslint-disable-next-line @typescript-eslint/member-ordering
-  readAll() {
-    return this.pets;
+  async readAll() {
+    const pets = await this.load();
+    return pets;
   }
-
-  // eslint-disable-next-line @typescript-eslint/member-ordering
-  readById(id: string) {
-    return this.pets.find((item) => item.id === id);
+ 
+  async readById(id: string) {
+    const pets = await this.load();
+    const pet = pets.find((item) => item.id === id);
   }
-
-  // eslint-disable-next-line @typescript-eslint/member-ordering
-  create(data: Pet) {
+ 
+   async create(data: Pet) {
     const newUser: Pet = {
-      id: (this.pets.length + 1).toString(),
+      id: crypto.randomUUID(),
       name: data.name,
       owner: data.owner,
       species: data.species,
       isAdopted: data.isAdopted,
     };
-    this.pets = [...this.pets, newUser];
-    this.saveToFile();
+    let pets = await this.load();
+    pets = [...pets, newUser];
+    await this.save();
     return newUser;
   }
 
-  // eslint-disable-next-line @typescript-eslint/member-ordering
-  update(inputId: string, data: Pet) {
-    const currentPet = this.pets.find((item) => item.id === inputId);
+  async update(id: string, data: Pet) {
+    let pets = await this.load()
+    const currentPet = pets.find((item) => item.id === id);
     if (!currentPet) {
-      throw new Error(`User ${inputId} not found`);
+      throw new Error(`User ${id} not found`);
     }
 
-    const newPet = { ...currentPet, ...data };
-    this.pets = this.pets.map((item) => (item.id === inputId ? newPet : item));
-    this.saveToFile();
+    const newPet: Pet= { ...currentPet, ...data };
+    pets = pets.map((item) => item.id === id ? newPet : item);
+    await this.save();
     return newPet;
   }
 
-  // eslint-disable-next-line @typescript-eslint/member-ordering
-  delete(inputId: string) {
-    const gonerPet = this.pets.find((item) => item.id === inputId);
-    if (!gonerPet) {
-      throw new Error(`User ${inputId} not found`);
+  async delete(id: string) {
+    let pets = await this.load();
+    const erasedPet = pets.find((item) => item.id === id);
+    if (!erasedPet) {
+      throw new Error(`User ${id} not found`);
     }
 
-    this.pets = this.pets.filter((user) => user.id !== inputId);
-    this.saveToFile();
-    return gonerPet;
+    pets = pets.filter((item) => item.id !== id);
+    await this.save();
+    return erasedPet;
   }
 }

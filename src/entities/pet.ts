@@ -5,3 +5,11 @@ export type Pet = {
   owner: string;
   isAdopted: boolean;
 };
+
+export type PetCreateDto = {
+  id: string;
+  name: string;
+  species: string;
+  owner: string;
+  isAdopted: boolean;
+}
