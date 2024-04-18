@@ -1,14 +1,23 @@
 import { createServer } from 'http';
 import createDebug from 'debug';
 import 'dotenv/config';
-import { app } from './app.js';
+import { startApp, createApp  } from './app.js';
+import { dbConnect } from './tools/db.connect.js';
 
 const debug = createDebug('W6E:server');
 
 const port = process.env.PORT ?? 3000;
-// eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+
+const app = createApp();
 const server = createServer(app);
-server.listen(port);
+dbConnect()
+  .then((prisma) => {
+    startApp(app, prisma);
+    server.listen(port);
+  })
+  .catch((error) => {
+    server.emit('error', error);
+  });
 
 server.on('error', (error) => {
   debug('Error:', error);

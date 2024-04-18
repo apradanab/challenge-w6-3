@@ -1,13 +1,13 @@
 import { Router as router } from 'express';
 import createDebug from 'debug';
-import { type PetController } from '../controllers/pet.controller.js';
+import { type AnimalController } from '../controllers/animal.controller.js';
 
-const debug = createDebug('W6E:pets:router');
+const debug = createDebug('W6E:animals:router');
 
-export class PetsRouter {
+export class AnimalsRouter {
   router = router();
-  constructor(readonly controller: PetController) {
-    debug('Instantiated pets router');
+  constructor(readonly controller: AnimalController) {
+    debug('Instantiated animals router');
     this.router.get('/', controller.getAll.bind(controller));
     this.router.get('/:id', controller.getById.bind(controller));
     this.router.post('/', controller.create.bind(controller));

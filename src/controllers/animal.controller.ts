@@ -1,18 +1,21 @@
 import { type NextFunction, type Request, type Response } from 'express';
-import { type Pet, type PetCreateDto } from '../entities/pet.js';
-import { type PetRepository } from '../repositories/pets.fs.repo.js';
 import createDebug from 'debug';
-import { petUpdateDtoSchema, petCreateDtoSchema } from "../entities/pet.schema.js";
+import { type AnimalCreateDto, type Animal } from '../entities/animals.js';
+import {
+ animalCreateDtoSchema,
+ animalUpdateDtoSchema,
+} from '../entities/animal.schema.js';
 import { HttpError } from '../middleware/errors.middleware.js';
+import { type AnimalsRepo } from '../repositories/animals.type.repo.js';
 
-const debug = createDebug('W6E:pets:controller');
+const debug = createDebug('W6E:animals:controller');
 
-export class PetController {
-  constructor(private readonly repo: PetRepository) {
-    debug('Instantiated pets controller');
+export class AnimalController {
+  constructor(private readonly repo: AnimalsRepo) {
+    debug('Instantiated animals controller');
   }
 
-   async getAll(req: Request, res: Response, next: NextFunction) {
+  async getAll(req: Request, res: Response, next: NextFunction) {
     try {
       const result = await this.repo.readAll();
       res.json(result);
@@ -22,9 +25,9 @@ export class PetController {
   }
 
   async getById(req: Request, res: Response, next: NextFunction) {
-    const {id} = req.params;
+    const { id } = req.params;
     try {
-      const result = this.repo.readById(id);
+      const result = await this.repo.readById(id);
       res.json(result);
     } catch (error) {
       next(error);
@@ -32,17 +35,23 @@ export class PetController {
   }
 
   async create(req: Request, res: Response, next: NextFunction) {
-    const data = req.body as Pet;
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-    const { error, value }: { error: Error | undefined; value: PetCreateDto } =
-    petCreateDtoSchema.validate(data, {abortEarly: false,});
+    const data = req.body as Animal;
 
-    if(error) {
+    const {
+      error,
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+      value,
+    }: { error: Error | undefined; value: AnimalCreateDto } =
+      animalCreateDtoSchema.validate(data, {
+        abortEarly: false,
+      });
+
+    if (error) {
       next(new HttpError(406, 'Not Acceptable', error.message));
       return;
     }
 
-    try{
+    try {
       const result = await this.repo.create(value);
       res.status(201);
       res.json(result);
@@ -52,9 +61,10 @@ export class PetController {
   }
 
   async update(req: Request, res: Response, next: NextFunction) {
-    const {id} = req.params;
-    const data = req.body as Pet;
-     const { error } = petUpdateDtoSchema.validate(data, {
+    const { id } = req.params;
+    const data = req.body as Animal;
+
+    const { error } = animalUpdateDtoSchema.validate(data, {
       abortEarly: false,
     });
 
@@ -65,7 +75,6 @@ export class PetController {
 
     try {
       const result = await this.repo.update(id, data);
-      res.status(202);
       res.json(result);
     } catch (error) {
       next(error);
@@ -73,7 +82,7 @@ export class PetController {
   }
 
   async delete(req: Request, res: Response, next: NextFunction) {
-    const {id} = req.params;
+    const { id } = req.params;
     try {
       const result = await this.repo.delete(id);
       res.json(result);

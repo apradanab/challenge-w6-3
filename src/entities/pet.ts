@@ -6,8 +6,7 @@ export type Pet = {
   isAdopted: boolean;
 };
 
-export type PetCreateDto = {
-  id: string;
+export type PetCreateDto = { // Data transfer
   name: string;
   species: string;
   owner: string;

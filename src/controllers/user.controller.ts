@@ -1,18 +1,22 @@
-import { type NextFunction, type Request, type Response } from 'express';
-import { type Pet, type PetCreateDto } from '../entities/pet.js';
-import { type PetRepository } from '../repositories/pets.fs.repo.js';
+/* eslint-disable prefer-destructuring */
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
+import { type Request, type Response, type NextFunction } from 'express';
 import createDebug from 'debug';
-import { petUpdateDtoSchema, petCreateDtoSchema } from "../entities/pet.schema.js";
 import { HttpError } from '../middleware/errors.middleware.js';
+import { type UserSqlRepository } from '../repositories/user.sql.repo.js';
+import { type UserCreateDto, type UserUpdateDto } from '../entities/user.js';
+import {
+  userCreateDtoSchema,
+  userUpdateDtoSchema,
+} from '../entities/user.schema.js';
+const debug = createDebug('W7:users:controller');
 
-const debug = createDebug('W6E:pets:controller');
-
-export class PetController {
-  constructor(private readonly repo: PetRepository) {
-    debug('Instantiated pets controller');
+export class UserController {
+  constructor(private readonly repo: UserSqlRepository) {
+    debug('Instantiated users controller');
   }
 
-   async getAll(req: Request, res: Response, next: NextFunction) {
+  async getAll(req: Request, res: Response, next: NextFunction) {
     try {
       const result = await this.repo.readAll();
       res.json(result);
@@ -22,9 +26,9 @@ export class PetController {
   }
 
   async getById(req: Request, res: Response, next: NextFunction) {
-    const {id} = req.params;
+    const id = req.params.id;
     try {
-      const result = this.repo.readById(id);
+      const result = await this.repo.readById(id);
       res.json(result);
     } catch (error) {
       next(error);
@@ -32,18 +36,19 @@ export class PetController {
   }
 
   async create(req: Request, res: Response, next: NextFunction) {
-    const data = req.body as Pet;
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-    const { error, value }: { error: Error | undefined; value: PetCreateDto } =
-    petCreateDtoSchema.validate(data, {abortEarly: false,});
+    const data = req.body as UserCreateDto;
+    const { error, value }: { error: Error | undefined; value: UserCreateDto } =
+      userCreateDtoSchema.validate(data, {
+        abortEarly: false,
+      });
 
-    if(error) {
+    if (error) {
       next(new HttpError(406, 'Not Acceptable', error.message));
       return;
     }
 
-    try{
-      const result = await this.repo.create(value);
+    try {
+      const result = await this.repo.create(data);
       res.status(201);
       res.json(result);
     } catch (error) {
@@ -52,9 +57,10 @@ export class PetController {
   }
 
   async update(req: Request, res: Response, next: NextFunction) {
-    const {id} = req.params;
-    const data = req.body as Pet;
-     const { error } = petUpdateDtoSchema.validate(data, {
+    const id = req.params.id;
+    const data = req.body as UserUpdateDto;
+
+    const { error } = userUpdateDtoSchema.validate(data, {
       abortEarly: false,
     });
 
@@ -73,7 +79,7 @@ export class PetController {
   }
 
   async delete(req: Request, res: Response, next: NextFunction) {
-    const {id} = req.params;
+    const id = req.params.id;
     try {
       const result = await this.repo.delete(id);
       res.json(result);
