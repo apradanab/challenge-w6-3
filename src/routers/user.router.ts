@@ -2,7 +2,7 @@ import { Router as router } from 'express';
 import createDebug from 'debug';
 import { type UserController } from '../controllers/user.controller';
 
-const debug = createDebug('W7:users:router');
+const debug = createDebug('W6E:users:router');
 
 export class UsersRouter {
   router = router();

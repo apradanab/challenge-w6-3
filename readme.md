@@ -1,4 +1,5 @@
-### Week 7 - Challenge 1
+
+# Week 7 - Challenge 1
 
 ## API REST Things I already know / Lo que queráis (II)
 
@@ -16,7 +17,7 @@ Recordemos que el JSON tendrá una sola propiedad de tipo array, donde almacenar
 
 Intentamos deploy a Render.
 
-### Week 7 - Challenge 2
+# Week 7 - Challenge 2
 
 ## API REST Things I already know / Lo que queráis (III)
 
@@ -33,9 +34,9 @@ Añadimos un segundo endpoint de Films (o lo que quieras) con un repo que conect
 
 Se testa el 100% del backend completo: Things & Films.
 
-Se publica en Render (https://render.com/)
+Se publica en Render (<https://render.com/>)
 
-### Week 7 - Challenge 3
+# Week 7 - Challenge 3
 
 ## API REST Things I already know / Lo que queráis (IV)
 
@@ -59,4 +60,4 @@ Actualizamos [Post] /Films (??) -> **create Films (??)**
 
 Se testa el 100% del backend completo: Things & Films & User & All.
 
-Se publica en Render (https://render.com/)
+Se publica en Render (<https://render.com/>)

@@ -7,7 +7,7 @@ import { HttpError } from '../middleware/errors.middleware.js';
 import { type PrismaClient } from '@prisma/client';
 import { type User, type UserCreateDto, type UserUpdateDto } from '../entities/user';
 
-const debug = createDebug('W7:users:repository');
+const debug = createDebug('W6E:users:repository:sql');
 
 const select = {
   id: true,

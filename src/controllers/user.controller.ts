@@ -9,7 +9,7 @@ import {
   userCreateDtoSchema,
   userUpdateDtoSchema,
 } from '../entities/user.schema.js';
-const debug = createDebug('W7:users:controller');
+const debug = createDebug('W6E:users:controller');
 
 export class UserController {
   constructor(private readonly repo: UserSqlRepository) {

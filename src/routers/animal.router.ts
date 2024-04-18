@@ -6,7 +6,7 @@ const debug = createDebug('W6E:animals:router');
 
 export class AnimalsRouter {
   router = router();
-  constructor(readonly controller: AnimalController) {
+  constructor(private readonly controller: AnimalController) {
     debug('Instantiated animals router');
     this.router.get('/', controller.getAll.bind(controller));
     this.router.get('/:id', controller.getById.bind(controller));
