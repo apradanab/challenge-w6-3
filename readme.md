@@ -1,34 +1,62 @@
-## Week 6 - Challenge 5
-API REST Things I already know / Lo que queráis
-Crea una API REST que se conecte a un fichero JSON, para manipular recursos de tipo cosas que ya sé. El JSON tendrá una sola propiedad de tipo array, donde almacenarán objetos que representarán cosas que hemos aprendido en el bootcamp.
+### Week 7 - Challenge 1
 
-La API REST debe tener los siguientes endpoints:
+## API REST Things I already know / Lo que queráis (II)
 
-[GET] /things -> devuelve el array de cosas que ya sé
+Continuamos el API REST del Challenge anterior, que se conecte a un fichero JSON, para manipular recursos de tipo _cosas que ya sé_ (o cualquier otro).
 
-[GET] /things/:idThing -> devuelve una cosa que ya sé
+Recordemos que el JSON tendrá una sola propiedad de tipo array, donde almacenarán objetos que representarán cosas que hemos aprendido en el bootcamp (o cualquier otro modelo).
 
-[DELETE] /things/:idThing -> borra una cosa que ya sé
+- El modelo de datos estará representado como "entity" en una carpeta/fichero independiente.
+- Dos opciones
+  - El repositorio y el controller son clases que se instancian en el Router.
+  - El repositorio, el controller y el router son clases que se instancian en app.
+- Les errores se controlan mediante un middleware de errores.
+- Añadimos validación con Joi
+- Se testa el 100% del backend.
 
-[POST] /things -> crea una cosa que ya sé (la recibe en el body)
+Intentamos deploy a Render.
 
-[PATCH] /things/:id -> modifica una cosa que ya sé (la recibe en el body)
+### Week 7 - Challenge 2
 
-Usamos express con las capas:
+## API REST Things I already know / Lo que queráis (III)
 
-app
-routers
-controllers
-model (entities)
-repositories
-AÑADIMOS un front con ANGULAR testado
+Continuamos el API REST del Challenge anterior, que se conecte a un fichero JSON, para manipular recursos de tipo _cosas que ya sé_ (o cualquier otro).
 
-Lista de 'things'
+Recordemos que el JSON tendrá una sola propiedad de tipo array, donde almacenarán objetos que representarán cosas que hemos aprendido en el bootcamp (o cualquier otro modelo).
 
-Añadir 'thing'
+Añadimos un segundo endpoint de Films (o lo que quieras) con un repo que conecta con **PostgreSql** usando **Prisma**
 
-Borrar 'thing'
+- El modelo de datos estará representado como "entity" en una carpeta/fichero independiente.
+- El router, el repositorio y el controller son clases que se instancian en app.
+- El interface del repositorio se inyecta en el controller (inversión de dependencias).
+- Les errores se controlan mediante un middleware de errores.
 
-Editar 'thing'
+Se testa el 100% del backend completo: Things & Films.
 
-Página de detalle
+Se publica en Render (https://render.com/)
+
+### Week 7 - Challenge 3
+
+## API REST Things I already know / Lo que queráis (IV)
+
+Continuamos el API REST del Challenge anterior, que:
+
+- se conecte a un fichero JSON, para manipular recursos de tipo _cosas que ya sé_ (o cualquier otro).
+- un segundo endpoint de Films (??) utiliza un repo que conecta con PostgreSql usando Prisma
+
+Añadimos **Users** relacionándolo con Films (??)
+
+- El modelo de datos estará representado como "entity" en una carpeta/fichero independiente.
+- Las rutas son /register y /login
+- El repositorio y el controller son clases que se instancian en el Router.
+- El interface del repositorio se inyecta en el controller (inversión de dependencias).
+- Les errores se controlan mediante un middleware de errores.
+
+**/register** registra usuarios
+**/login** comprueba el login y si es correcto devuelve los datos del usuario (sin token)
+
+Actualizamos [Post] /Films (??) -> **create Films (??)**
+
+Se testa el 100% del backend completo: Things & Films & User & All.
+
+Se publica en Render (https://render.com/)
