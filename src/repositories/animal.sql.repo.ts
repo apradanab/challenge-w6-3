@@ -1,6 +1,6 @@
 
 import { HttpError } from '../middleware/errors.middleware.js';
-import { type AnimalsRepo } from './animals.type.repo.js';
+import { type AnimalsRepo } from './type.repo.js';
 import { type PrismaClient } from "@prisma/client";
 import createDebug from 'debug';
 import { type AnimalCreateDto } from "../entities/animals.js";
@@ -11,6 +11,12 @@ const select = {
   id: true,
   name: true,
   species: true,
+  sponsor: {
+    select: {
+      name: true,
+      email: true,
+    }
+  },
   habitat: true,
   isWild: true,
 };
@@ -38,10 +44,39 @@ export class AnimalsSqlRepo implements AnimalsRepo  {
     return animal;
   }
 
+    async searchForLogin(key: 'email' | 'name', value: string) {
+    // Check if the key is valid
+
+    if (!['email', 'name'].includes(key)) {
+      throw new HttpError(404, 'Not Found', 'Invalid query parameters');
+    }
+
+    const userData = await this.prisma.user.findFirst({
+      where: {
+        [key]: value,
+      },
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        role: true,
+        password: true,
+      },
+    });
+
+    if (!userData) {
+      throw new HttpError(404, 'Not Found', `Invalid ${key} or password`);
+    }
+
+    return userData;
+  }
+
   async create(data: AnimalCreateDto) {
+    const { sponsorId, ...animalData } = data;
     return this.prisma.animal.create({
       data: {
-        ...data,
+        ...animalData,
+        sponsor: {connect: {id:data.sponsorId}}
       },
       select,
     });

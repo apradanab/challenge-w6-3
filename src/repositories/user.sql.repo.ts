@@ -16,7 +16,7 @@ const select = {
   password: true,
   birthDate: true,
   role: true,
-  pets: { select: { name: true, species: true } },
+  animals: { select: { name: true, species: true } },
 };
 
 export class UserSqlRepository {
@@ -39,11 +39,41 @@ export class UserSqlRepository {
     return pet;
   }
 
+  // 1er paso login. filtro
+  // async find (key: string, value: unknown) {
+  //   return this.prisma.user.findMany({
+  //     where: {
+  //       [key]: value,
+  //     },
+  //     select,
+  //   })
+  // }
+  async searchForLogin(key: 'email' | 'name', value:unknown) {
+
+    if(!['email', 'name'].includes(key)) {
+      throw new HttpError(404, 'Not Found', 'Invalid query parameters');
+    }
+
+    const userData = await this.prisma.user.findFirst({
+      where: {
+        [key]: value,
+      },
+      select: {
+        id:true,
+        name:true,
+        email:true,
+        role:true,
+        password:true,
+      }
+    });
+    return userData;  // Falta modificar repo.type
+  }
+
   async create(data: UserCreateDto) {
     const newUser = this.prisma.user.create({
       data: {
         role: 'user',
-        ...data,
+        ...data
       },
       select,
     });

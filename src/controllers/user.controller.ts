@@ -1,5 +1,6 @@
-/* eslint-disable prefer-destructuring */
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
+/* eslint-disable prefer-destructuring */
+ 
 import { type Request, type Response, type NextFunction } from 'express';
 import createDebug from 'debug';
 import { HttpError } from '../middleware/errors.middleware.js';
@@ -9,6 +10,7 @@ import {
   userCreateDtoSchema,
   userUpdateDtoSchema,
 } from '../entities/user.schema.js';
+import { Auth } from '../services/auth.services.js';
 const debug = createDebug('W6E:users:controller');
 
 export class UserController {
@@ -35,8 +37,69 @@ export class UserController {
     }
   }
 
+  async login(req: Request, res: Response, next: NextFunction) {
+    const { email, name, password } = req.body as UserCreateDto;
+
+    if ((!email && !name) || !password) {
+      next(
+        new HttpError(
+          400,
+          'Bad Request',
+          'Email/name and password are required'
+        )
+      );
+      return;
+    }
+
+    const error = new HttpError(
+      401,
+      'Unauthorized',
+      'Email/name and password invalid'
+    );
+
+    try {
+      const user = await this.repo.searchForLogin(
+        email ? 'email' : 'name',
+        email || name
+      );
+
+      if (!user) {
+        next(error);
+        return;
+      }
+
+      if (!(await Auth.compare(password, user.password))) {
+        next(error);
+        return;
+      }
+
+      const token = Auth.signJwt({
+        id: user.id,
+        role: user.role,
+      });
+
+      res.status(200).json({ token });
+    } catch (error) {
+      next(error);
+    }
+  }
+  
   async create(req: Request, res: Response, next: NextFunction) {
     const data = req.body as UserCreateDto;
+    if (!data.password || typeof data.password !== 'string'){
+        next(
+        new HttpError(
+          400,
+          'Bad Request',
+          'Password is required and must be a string'
+        )
+      );
+      return;
+
+    }
+
+    data.password = await Auth.hash(data.password);
+
     const { error, value }: { error: Error | undefined; value: UserCreateDto } =
       userCreateDtoSchema.validate(data, {
         abortEarly: false,
@@ -59,7 +122,10 @@ export class UserController {
   async update(req: Request, res: Response, next: NextFunction) {
     const id = req.params.id;
     const data = req.body as UserUpdateDto;
-
+    if(data.password && typeof data.password === 'string') {
+      data.password = await Auth.hash(data.password);
+    }
+    
     const { error } = userUpdateDtoSchema.validate(data, {
       abortEarly: false,
     });

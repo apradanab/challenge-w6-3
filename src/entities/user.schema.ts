@@ -5,6 +5,7 @@ export const userCreateDtoSchema = Joi.object<UserCreateDto>({
   name: Joi.string().required(),
   password: Joi.string().required(),
   email: Joi.string().email().required(),
+  role: Joi.string().required(),
   birthDate: Joi.string().required(),
 });
 

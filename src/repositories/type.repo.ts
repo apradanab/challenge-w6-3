@@ -7,3 +7,5 @@ export type AnimalsRepo = {
   update(id: string, data: Partial<Animal>): Promise<Animal>;
   delete(id: string): Promise<Animal>;
 };
+
+// Export type WithLoginRepo<> =

@@ -13,6 +13,7 @@ import { AnimalsRouter } from "./routers/animal.router.js";
 import { UserSqlRepository } from './repositories/user.sql.repo.js';
 import { UserController } from './controllers/user.controller.js';
 import { UsersRouter } from './routers/user.router.js';
+import { Auth } from './services/auth.services.js';
 
 const debug = createDebug('W6E:app');
 
@@ -24,16 +25,18 @@ export const createApp = () => {
 export const startApp = (app: Express, prisma: PrismaClient) => {
   debug('Starting app');
 
+const authInterceptor = new Auth();
 const animalRepo = new AnimalsSqlRepo(prisma);
 const animalController = new AnimalController(animalRepo);
-const animalRouter = new AnimalsRouter(animalController);
+const animalRouter = new AnimalsRouter(animalController, authInterceptor);
 const errorMiddleware = new ErrorsMiddleware()
 // Const petRepo = new PetsSqlRepo();
 // const petController = new PetController(petRepo);
 // const petRouter = new PetsRouter(petController);
 const userRepo = new UserSqlRepository(prisma);
 const userController = new UserController(userRepo);
-const userRouter = new UsersRouter(userController);
+const userRouter = new UsersRouter(userController, authInterceptor);
+
 
 
   app.use(express.json());

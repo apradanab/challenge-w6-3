@@ -6,7 +6,7 @@ import {
  animalUpdateDtoSchema,
 } from '../entities/animal.schema.js';
 import { HttpError } from '../middleware/errors.middleware.js';
-import { type AnimalsRepo } from '../repositories/animals.type.repo.js';
+import { type AnimalsRepo } from '../repositories/type.repo.js';
 
 const debug = createDebug('W6E:animals:controller');
 
